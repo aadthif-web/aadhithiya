@@ -42,9 +42,9 @@
 
 ## 🌐 Connect With Me
 
-[![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:YOUR_EMAIL@gmail.com)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/YOUR_LINKEDIN)
-[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/YOUR_INSTAGRAM)
+[![Gmail](aadthif@gmail.com)
+[![LinkedIn](https://www.linkedin.com/in/aadhithiya-p-4700393b3?utm_source=share_via&utm_content=profile&utm_medium=member_android)
+[![Instagram](https://www.instagram.com/itz__adhix?igsh=cXdhZGI0cGcxZjll)
 
 ---
 
