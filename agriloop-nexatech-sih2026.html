@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriLoop — NexaTech | SIH 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --paper:#0E1412;
+    --paper-2:#161D1A;
+    --card:#1A2320;
+    --ink:#E9EFE9;
+    --ink-soft:#8FA095;
+    --forest:#5FCB7A;
+    --forest-deep:#3FA35C;
+    --rust:#F0824A;
+    --gold:#E3B23C;
+    --sky:#4FB8E8;
+    --line: rgba(233,239,233,0.10);
+    --shadow: 0 2px 0 rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--forest);
+    font-weight:500;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    color:var(--ink);
+    margin:0;
+    line-height:1.08;
+  }
+  a{color:inherit;}
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .header-inner{
+    max-width:1180px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px;
+    gap:20px;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{
+    width:36px; height:36px; border-radius:9px;
+    background:var(--forest);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--paper); font-family:'Fraunces',serif; font-weight:700; font-size:18px;
+    flex-shrink:0;
+  }
+  .brand-text{line-height:1.15;}
+  .brand-text .name{font-family:'Fraunces',serif; font-weight:700; font-size:19px;}
+  .brand-text .sub{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-soft); letter-spacing:.06em;}
+
+  nav{display:flex; gap:4px; flex-wrap:wrap;}
+  .tab-btn{
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:13.5px; font-weight:600;
+    padding:9px 14px; border-radius:8px; border:1px solid transparent;
+    background:transparent; color:var(--ink-soft);
+    cursor:pointer; transition:all .15s ease;
+  }
+  .tab-btn:hover{background:var(--paper-2); color:var(--ink);}
+  .tab-btn.active{background:var(--forest); color:var(--paper); box-shadow:var(--shadow);}
+  .tab-btn:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+    outline:2px solid var(--sky); outline-offset:2px;
+  }
+
+  main{max-width:1180px; margin:0 auto; padding:32px 24px 80px;}
+  .tab-panel{display:none; animation:fade .35s ease;}
+  .tab-panel.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ---------- overview / hero ---------- */
+  .hero{
+    display:grid; grid-template-columns:1.1fr 1fr; gap:40px;
+    align-items:center;
+    padding:28px 0 8px;
+  }
+  .hero h1{font-size:44px; font-weight:600; margin-bottom:14px;}
+  .hero h1 em{font-style:normal; color:var(--rust);}
+  .hero p.lede{font-size:16.5px; color:var(--ink-soft); max-width:46ch; margin-bottom:22px;}
+  .hero-ctas{display:flex; gap:10px; flex-wrap:wrap;}
+  .btn{
+    font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:14px;
+    padding:11px 18px; border-radius:8px; border:1px solid var(--ink);
+    cursor:pointer; transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--forest); border-color:var(--forest); color:var(--paper);}
+  .btn-primary:hover{box-shadow:var(--shadow);}
+  .btn-ghost{background:transparent; color:var(--ink);}
+  .btn-ghost:hover{background:var(--paper-2);}
+  .btn-rust{background:var(--rust); border-color:var(--rust); color:var(--paper);}
+  .btn-sky{background:var(--sky); border-color:var(--sky); color:var(--paper);}
+  .btn-sm{padding:7px 12px; font-size:12.5px; border-radius:7px;}
+
+  /* signature loop wheel */
+  .loop-wrap{position:relative; width:400px; height:400px; margin:0 auto; max-width:100%;}
+  .loop-ring{
+    position:absolute; inset:0; border-radius:50%;
+    border:1.5px dashed rgba(95,203,122,0.35);
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .loop-ring{animation:spin 60s linear infinite;}
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loop-center{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:132px; height:132px; border-radius:50%;
+    background:var(--card); border:1px solid var(--line);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; box-shadow:var(--shadow);
+  }
+  .loop-center .eyebrow{margin-bottom:2px;}
+  .loop-center strong{font-family:'Fraunces',serif; font-size:16px;}
+  .loop-node{
+    position:absolute; width:112px; height:112px;
+    transform:translate(-50%,-50%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; border-radius:50%;
+    background:var(--card); border:1px solid var(--line);
+    cursor:pointer; padding:8px; box-shadow:var(--shadow);
+    transition:transform .15s ease, border-color .15s ease;
+  }
+  .loop-node:hover{transform:translate(-50%,-50%) scale(1.06); border-color:var(--forest);}
+  .loop-node .num{
+    font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--rust); font-weight:500;
+  }
+  .loop-node .lbl{font-size:12px; font-weight:600; line-height:1.2; margin-top:2px;}
+
+  .stat-row{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:44px;}
+  .stat-card{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:18px 16px;
+  }
+  .stat-card .val{font-family:'Fraunces',serif; font-size:28px; font-weight:600;}
+  .stat-card .lbl{font-size:12.5px; color:var(--ink-soft); margin-top:4px;}
+
+  .feature-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:22px;}
+  .feature-card{
+    background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px;
+  }
+  .feature-card .icon{font-size:22px;}
+  .feature-card h3{font-size:17px; margin:10px 0 6px;}
+  .feature-card p{font-size:13.5px; color:var(--ink-soft); margin:0; line-height:1.5;}
+
+  section .section-head{margin-bottom:22px;}
+  section .section-head h2{font-size:28px; font-weight:600; margin-bottom:6px;}
+  section .section-head p{color:var(--ink-soft); font-size:14.5px; margin:0; max-width:60ch;}
+
+  /* ---------- register ---------- */
+  .reg-grid{display:grid; grid-template-columns:1fr 1.2fr; gap:24px; align-items:start;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:12.5px; font-weight:600; margin-bottom:6px; color:var(--ink-soft);}
+  .field input, .field select{
+    width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--line);
+    background:var(--paper); font-family:'IBM Plex Sans',sans-serif; font-size:14px; color:var(--ink);
+  }
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+
+  .farmer-list{display:flex; flex-direction:column; gap:10px; max-height:520px; overflow:auto; padding-right:4px;}
+  .farmer-card{
+    background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px;
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+  }
+  .farmer-card .info strong{font-size:14.5px;}
+  .farmer-card .meta{font-size:12px; color:var(--ink-soft); margin-top:3px; font-family:'IBM Plex Mono',monospace;}
+  .tag{
+    display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10.5px;
+    padding:3px 8px; border-radius:100px; background:var(--paper-2); color:var(--ink-soft); margin-right:5px;
+  }
+
+  /* ---------- analyze ---------- */
+  .analyze-grid{display:grid; grid-template-columns:.9fr 1.3fr; gap:24px; align-items:start;}
+  .result-card{border-radius:12px; border:1px solid var(--line); background:var(--card); padding:22px; display:none;}
+  .result-card.show{display:block; animation:fade .3s ease;}
+  .result-head{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--line);}
+  .product-list{display:grid; gap:10px; margin:14px 0;}
+  .product-row{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:12px 14px; border-radius:9px; background:var(--paper);
+  }
+  .product-row .name{font-weight:600; font-size:14px;}
+  .product-row .buyer{font-size:11.5px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;}
+  .product-row .val{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--forest);}
+  .note-box{
+    background:rgba(95,203,122,0.10); border-left:3px solid var(--forest); border-radius:6px;
+    padding:10px 12px; font-size:13px; color:var(--ink-soft); margin-top:10px;
+  }
+
+  /* ---------- AI insight ---------- */
+  .ai-card{
+    margin-top:16px; border-radius:12px; border:1px solid rgba(79,184,232,0.3);
+    background:rgba(79,184,232,0.07); padding:18px; display:none;
+  }
+  .ai-card.show{display:block; animation:fade .3s ease;}
+  .ai-head{display:flex; align-items:center; gap:8px; margin-bottom:12px;}
+  .ai-head .dot{width:7px; height:7px; border-radius:50%; background:var(--sky); flex-shrink:0;}
+  @media (prefers-reduced-motion: no-preference){
+    .ai-head .dot.pulse{animation:pulse 1.1s ease-in-out infinite;}
+  }
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.25;}}
+  .ai-head span.lbl{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--sky); font-weight:500;}
+  .ai-body{font-size:13.5px; line-height:1.6; color:var(--ink);}
+  .ai-body b{color:var(--sky);}
+  .ai-body .ai-row{margin-bottom:10px;}
+  .ai-body .ai-row:last-child{margin-bottom:0;}
+  .ai-error{
+    font-size:12.5px; color:var(--rust); background:rgba(240,130,74,0.1);
+    border-left:3px solid var(--rust); border-radius:6px; padding:10px 12px; line-height:1.5;
+  }
+  .ai-loading{font-size:13px; color:var(--ink-soft); font-style:italic;}
+
+  /* ---------- marketplace ---------- */
+  .filter-bar{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
+  .filter-bar select{
+    padding:9px 12px; border-radius:8px; border:1px solid var(--line); background:var(--card);
+    font-family:'IBM Plex Sans',sans-serif; font-size:13.5px;
+  }
+  .buyer-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .buyer-card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px;}
+  .buyer-card .top{display:flex; justify-content:space-between; align-items:flex-start;}
+  .buyer-card h3{font-size:16.5px; margin-bottom:2px;}
+  .buyer-card .type{font-size:12px; color:var(--sky); font-weight:600;}
+  .buyer-card .loc{font-size:12px; color:var(--ink-soft); margin-top:8px; font-family:'IBM Plex Mono',monospace;}
+  .buyer-card .rating{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--gold); font-weight:500;}
+  .buyer-card .accepts{margin:12px 0 14px; display:flex; flex-wrap:wrap; gap:6px;}
+
+  /* ---------- transactions ---------- */
+  .txn-stats{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px;}
+  .txn-section-label{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); margin:26px 0 12px;}
+  .txn-list{display:flex; flex-direction:column; gap:14px;}
+  .txn-card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px;}
+  .txn-card.completed{opacity:.75;}
+  .txn-top{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px;}
+  .txn-top .who strong{font-size:15px;}
+  .txn-top .who .meta{font-size:12px; color:var(--ink-soft); margin-top:3px; font-family:'IBM Plex Mono',monospace;}
+  .txn-top .val{font-family:'IBM Plex Mono',monospace; font-size:14px; color:var(--forest); text-align:right; white-space:nowrap;}
+  .txn-badge{
+    display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.04em;
+    padding:3px 9px; border-radius:100px; margin-top:6px;
+    background:rgba(79,184,232,0.15); color:var(--sky);
+  }
+  .txn-badge.done{background:rgba(95,203,122,0.15); color:var(--forest);}
+  .stepper{display:flex; align-items:center; margin:14px 0 16px;}
+  .step{
+    flex:1; display:flex; flex-direction:column; align-items:center; position:relative; text-align:center;
+  }
+  .step .dot{
+    width:20px; height:20px; border-radius:50%; background:var(--paper); border:2px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--ink-soft);
+    z-index:1; flex-shrink:0;
+  }
+  .step.done .dot{background:var(--forest); border-color:var(--forest); color:var(--paper);}
+  .step.current .dot{background:var(--sky); border-color:var(--sky); color:var(--paper);}
+  .step .lbl{font-size:10.5px; color:var(--ink-soft); margin-top:6px; line-height:1.25; max-width:80px;}
+  .step.done .lbl, .step.current .lbl{color:var(--ink);}
+  .step:not(:last-child)::after{
+    content:''; position:absolute; top:10px; left:calc(50% + 10px); right:calc(-50% + 10px);
+    height:2px; background:var(--line);
+  }
+  .step.done:not(:last-child)::after{background:var(--forest);}
+  .txn-actions{display:flex; justify-content:flex-end; align-items:center; gap:10px;}
+  .txn-empty{color:var(--ink-soft); font-size:14px; background:var(--card); border:1px dashed var(--line); border-radius:12px; padding:28px; text-align:center;}
+
+  /* ---------- dashboard ---------- */
+  .dash-stats{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px;}
+  .chart-grid{display:grid; grid-template-columns:1fr 1.3fr; gap:16px;}
+  .chart-card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px;}
+  .chart-card h3{font-size:15px; margin-bottom:14px;}
+
+  /* toast */
+  #toast{
+    position:fixed; bottom:22px; right:22px; z-index:100;
+    background:var(--card); color:var(--ink); border:1px solid var(--line);
+    padding:12px 18px; border-radius:9px;
+    font-size:13.5px; font-weight:500; opacity:0; transform:translateY(10px);
+    transition:all .25s ease; pointer-events:none;
+    box-shadow:0 6px 20px rgba(0,0,0,0.45);
+  }
+  #toast.show{opacity:1; transform:translateY(0);}
+
+  footer{border-top:1px solid var(--line); padding:20px 24px; text-align:center;}
+  footer p{font-size:12px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; margin:0;}
+
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr;}
+    .stat-row, .dash-stats{grid-template-columns:repeat(2,1fr);}
+    .feature-grid, .buyer-grid{grid-template-columns:1fr;}
+    .reg-grid, .analyze-grid, .chart-grid{grid-template-columns:1fr;}
+    nav{gap:2px;}
+    .tab-btn{padding:8px 10px; font-size:12.5px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <div class="brand-text">
+        <div class="name">AgriLoop</div>
+        <div class="sub">NEXATECH · SIH 2026</div>
+      </div>
+    </div>
+    <nav id="tabnav">
+      <button class="tab-btn active" data-tab="overview">Overview</button>
+      <button class="tab-btn" data-tab="register">Register</button>
+      <button class="tab-btn" data-tab="analyze">Analyze Waste</button>
+      <button class="tab-btn" data-tab="marketplace">Marketplace</button>
+      <button class="tab-btn" data-tab="transactions">Transactions</button>
+      <button class="tab-btn" data-tab="dashboard">Dashboard</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- OVERVIEW -->
+  <section id="overview" class="tab-panel active">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Agriculture Waste Management &amp; Business Connection</div>
+        <h1 style="margin-top:10px;">Turn field waste into <em>farm income</em>.</h1>
+        <p class="lede">AgriLoop registers farmers' land, crop and waste data, classifies it with an AI-assisted model, recommends what it can become, connects farmers directly to buyers, and tracks the transaction through to delivery — closing the loop between the field and the factory.</p>
+        <div class="hero-ctas">
+          <button class="btn btn-primary" data-goto="register">Register a farmer</button>
+          <button class="btn btn-ghost" data-goto="dashboard">View impact dashboard</button>
+        </div>
+      </div>
+      <div class="loop-wrap">
+        <div class="loop-ring"></div>
+        <div class="loop-center">
+          <div class="eyebrow">The Loop</div>
+          <strong>Waste → Value</strong>
+        </div>
+        <div class="loop-node" data-goto="register" style="left:50%; top:2%;">
+          <span class="num">01</span><span class="lbl">Farmer registration</span>
+        </div>
+        <div class="loop-node" data-goto="analyze" style="left:97%; top:34%;">
+          <span class="num">02</span><span class="lbl">AI waste analysis</span>
+        </div>
+        <div class="loop-node" data-goto="analyze" style="left:79%; top:93%;">
+          <span class="num">03</span><span class="lbl">Product recommendation</span>
+        </div>
+        <div class="loop-node" data-goto="marketplace" style="left:21%; top:93%;">
+          <span class="num">04</span><span class="lbl">Buyer matching</span>
+        </div>
+        <div class="loop-node" data-goto="transactions" style="left:3%; top:34%;">
+          <span class="num">05</span><span class="lbl">Transaction &amp; feedback</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card"><div class="val" id="ov-farmers">–</div><div class="lbl">Farmers onboarded</div></div>
+      <div class="stat-card"><div class="val" id="ov-waste">–</div><div class="lbl">Waste diverted (kg/mo)</div></div>
+      <div class="stat-card"><div class="val" id="ov-income">–</div><div class="lbl">Est. monthly income unlocked</div></div>
+      <div class="stat-card"><div class="val" id="ov-co2">–</div><div class="lbl">Est. CO₂e avoided (t/mo)</div></div>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card"><div class="icon">🧑‍🌾</div><h3>Farmer registration</h3><p>Land, crop and waste details captured once, in the farmer's own language of acres and sacks.</p></div>
+      <div class="feature-card"><div class="icon">🔎</div><h3>AI waste analysis</h3><p>Classifies waste type and quantity, then matches it against a knowledge base of viable end-products.</p></div>
+      <div class="feature-card"><div class="icon">🤝</div><h3>Buyer matching</h3><p>Surfaces the businesses actively looking for that exact waste stream, ranked by fit and rating.</p></div>
+      <div class="feature-card"><div class="icon">📦</div><h3>Transaction tracking</h3><p>Every connection becomes a trackable order — payment, pickup and delivery — with a running history log.</p></div>
+    </div>
+  </section>
+
+  <!-- REGISTER -->
+  <section id="register" class="tab-panel">
+    <div class="section-head">
+      <h2>Farmer registration</h2>
+      <p>Capture land, crop and waste details. Every registered farmer flows straight into the analyzer, marketplace and dashboard.</p>
+    </div>
+    <div class="reg-grid">
+      <form class="card" id="farmer-form">
+        <div class="field">
+          <label for="f-name">Farmer name</label>
+          <input id="f-name" required placeholder="e.g. Murugan K.">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-village">Village / district</label>
+            <input id="f-village" required placeholder="e.g. Pollachi">
+          </div>
+          <div class="field">
+            <label for="f-land">Land size (acres)</label>
+            <input id="f-land" type="number" min="0.1" step="0.1" required placeholder="e.g. 3.5">
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-crop">Primary crop</label>
+          <input id="f-crop" required placeholder="e.g. Paddy">
+        </div>
+        <div class="field">
+          <label for="f-waste-type">Waste type</label>
+          <select id="f-waste-type" required></select>
+        </div>
+        <div class="field">
+          <label for="f-waste-qty">Waste quantity (kg / month)</label>
+          <input id="f-waste-qty" type="number" min="1" required placeholder="e.g. 600">
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%; margin-top:6px;">Register farmer</button>
+      </form>
+
+      <div>
+        <div class="eyebrow" style="margin-bottom:10px;">Registered farmers (<span id="farmer-count">0</span>)</div>
+        <div class="farmer-list" id="farmer-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANALYZE -->
+  <section id="analyze" class="tab-panel">
+    <div class="section-head">
+      <h2>AI waste analysis</h2>
+      <p>Pick a waste type and monthly quantity — the knowledge base matches viable products instantly, then Claude analyzes the specifics for tailored guidance.</p>
+    </div>
+    <div class="analyze-grid">
+      <div class="card">
+        <div class="field">
+          <label for="a-waste-type">Waste type</label>
+          <select id="a-waste-type"></select>
+        </div>
+        <div class="field">
+          <label for="a-waste-qty">Quantity (kg / month)</label>
+          <input id="a-waste-qty" type="number" min="1" value="500">
+        </div>
+        <button class="btn btn-rust" id="analyze-btn" style="width:100%;">Run  analysis</button>
+      </div>
+
+      <div>
+        <div class="result-card" id="result-card">
+          <div class="result-head">
+            <div>
+              <div class="eyebrow" id="res-eyebrow">Classification</div>
+              <h3 id="res-title" style="font-size:20px; margin-top:4px;"></h3>
+            </div>
+            <button class="btn btn-sky btn-sm" id="find-buyers-btn">Find buyers →</button>
+          </div>
+          <div class="eyebrow" style="margin-bottom:8px;">Recommended products</div>
+          <div class="product-list" id="product-list"></div>
+          <div class="note-box" id="res-note"></div>
+        </div>
+
+        <div class="ai-card" id="ai-card">
+          <div class="ai-head"><span class="dot" id="ai-dot"></span><span class="lbl">Claude AI analysis</span></div>
+          <div class="ai-body" id="ai-body"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARKETPLACE -->
+  <section id="marketplace" class="tab-panel">
+    <div class="section-head">
+      <h2>Buyer marketplace</h2>
+      <p>Businesses actively sourcing agricultural waste as raw material — matched to what your farmers are producing.</p>
+    </div>
+    <div class="filter-bar">
+      <span class="eyebrow">Filter by waste type</span>
+      <select id="market-filter"></select>
+    </div>
+    <div class="buyer-grid" id="buyer-grid"></div>
+  </section>
+
+  <!-- TRANSACTIONS -->
+  <section id="transactions" class="tab-panel">
+    <div class="section-head">
+      <h2>Transaction process</h2>
+      <p>Every "Connect" in the marketplace opens an order here — tracked from placement through payment, pickup and delivery, with a running history log.</p>
+    </div>
+    <div class="txn-stats">
+      <div class="stat-card"><div class="val" id="t-active">–</div><div class="lbl">Active orders</div></div>
+      <div class="stat-card"><div class="val" id="t-completed">–</div><div class="lbl">Completed deals</div></div>
+      <div class="stat-card"><div class="val" id="t-value">–</div><div class="lbl">Total value settled</div></div>
+    </div>
+
+    <div class="txn-section-label">In progress</div>
+    <div class="txn-list" id="txn-active-list"></div>
+
+    <div class="txn-section-label">History</div>
+    <div class="txn-list" id="txn-history-list"></div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="tab-panel">
+    <div class="section-head">
+      <h2>Impact dashboard</h2>
+      <p>A live view of every registered farmer's waste, aggregated into platform-wide impact.</p>
+    </div>
+    <div class="dash-stats">
+      <div class="stat-card"><div class="val" id="d-farmers">–</div><div class="lbl">Farmers onboarded</div></div>
+      <div class="stat-card"><div class="val" id="d-waste">–</div><div class="lbl">Waste diverted (kg/mo)</div></div>
+      <div class="stat-card"><div class="val" id="d-income">–</div><div class="lbl">Est. monthly income unlocked</div></div>
+      <div class="stat-card"><div class="val" id="d-co2">–</div><div class="lbl">Est. CO₂e avoided (t/mo)</div></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Waste type distribution</h3>
+        <canvas id="chart-distribution" height="240"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Estimated monthly income by farmer (₹)</h3>
+        <canvas id="chart-income" height="240"></canvas>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>NEXATECH · AGRICULTURE WASTE MANAGEMENT &amp; BUSINESS CONNECTION · SIH 2026 IDEA DEMO — ALL DATA IS ILLUSTRATIVE</p>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+/* ---------------- data ---------------- */
+const WASTE_TYPES = [
+  { id:'rice_straw', name:'Rice Straw', icon:'🌾',
+    products:[
+      { name:'Biochar (soil amendment)', min:8, max:12, buyer:'BioChar Solutions' },
+      { name:'Compostable packaging board', min:6, max:9, buyer:'EcoPack Industries' },
+      { name:'Treated cattle fodder', min:4, max:6, buyer:'Cattle Feed Corp' }
+    ],
+    note:'Diverting rice straw prevents open-field burning — one of the largest sources of post-harvest air pollution.' },
+  { id:'sugarcane_bagasse', name:'Sugarcane Bagasse', icon:'🎋',
+    products:[
+      { name:'Bio-briquettes (fuel)', min:5, max:7, buyer:'GreenFuel Energy Pvt Ltd' },
+      { name:'Paper pulp', min:10, max:14, buyer:'PaperCraft Mills' },
+      { name:'Organic compost', min:3, max:5, buyer:'FarmCompost Co' }
+    ],
+    note:'Bagasse has strong fibre content, making it well suited to both energy and paper-pulp applications.' },
+  { id:'coconut_husk', name:'Coconut Husk', icon:'🥥',
+    products:[
+      { name:'Coir fibre', min:15, max:20, buyer:'EcoPack Industries' },
+      { name:'Coco-peat growing medium', min:9, max:12, buyer:'FarmCompost Co' }
+    ],
+    note:'Coir fibre commands a premium price and is in steady demand from packaging and horticulture buyers.' },
+  { id:'cotton_stalk', name:'Cotton Stalk', icon:'🌱',
+    products:[
+      { name:'Particle board', min:7, max:10, buyer:'EcoPack Industries' },
+      { name:'Bio-briquettes (fuel)', min:5, max:8, buyer:'GreenFuel Energy Pvt Ltd' }
+    ],
+    note:'Cotton stalk is otherwise almost always burnt in-field; diverting it has an outsized pollution benefit.' },
+  { id:'banana_stem', name:'Banana Stem (Pseudostem)', icon:'🍌',
+    products:[
+      { name:'Natural textile fibre', min:18, max:25, buyer:'EcoPack Industries' },
+      { name:'Organic compost', min:3, max:5, buyer:'FarmCompost Co' }
+    ],
+    note:'Banana fibre is the highest-value stream in this model — a strong candidate for micro-enterprise support.' },
+  { id:'vegetable_waste', name:'Vegetable / Market Waste', icon:'🥕',
+    products:[
+      { name:'Organic compost', min:3, max:5, buyer:'FarmCompost Co' },
+      { name:'Biogas feedstock', min:2, max:4, buyer:'GreenFuel Energy Pvt Ltd' }
+    ],
+    note:'Fast-decomposing, so this stream benefits most from short collection cycles.' },
+  { id:'corn_stalk', name:'Corn Stalk / Stover', icon:'🌽',
+    products:[
+      { name:'Treated animal feed', min:6, max:8, buyer:'Cattle Feed Corp' },
+      { name:'Bio-briquettes (fuel)', min:5, max:7, buyer:'GreenFuel Energy Pvt Ltd' }
+    ],
+    note:'Stover is bulky to transport — local buyer matching materially improves its economics.' }
+];
+
+const BUYERS = [
+  { name:'GreenFuel Energy Pvt Ltd', type:'Bioenergy & briquettes', accepts:['sugarcane_bagasse','cotton_stalk','vegetable_waste','corn_stalk'], location:'Coimbatore, TN', rating:4.6 },
+  { name:'EcoPack Industries', type:'Sustainable packaging', accepts:['rice_straw','coconut_husk','cotton_stalk','banana_stem'], location:'Erode, TN', rating:4.4 },
+  { name:'FarmCompost Co', type:'Organic compost & growing media', accepts:['sugarcane_bagasse','coconut_husk','banana_stem','vegetable_waste'], location:'Salem, TN', rating:4.7 },
+  { name:'BioChar Solutions', type:'Soil amendment', accepts:['rice_straw'], location:'Trichy, TN', rating:4.3 },
+  { name:'Cattle Feed Corp', type:'Animal nutrition', accepts:['rice_straw','corn_stalk'], location:'Madurai, TN', rating:4.5 },
+  { name:'PaperCraft Mills', type:'Paper & pulp', accepts:['sugarcane_bagasse'], location:'Coimbatore, TN', rating:4.2 }
+];
+
+function wasteById(id){ return WASTE_TYPES.find(w => w.id === id); }
+function avgValuePerKg(product){ return (product.min + product.max) / 2; }
+function bestProductFor(wasteId){
+  const w = wasteById(wasteId);
+  return w.products.reduce((a,b) => avgValuePerKg(b) > avgValuePerKg(a) ? b : a, w.products[0]);
+}
+
+/* seed farmers so the demo isn't empty */
+let farmers = [
+  { name:'Murugan K.', village:'Pollachi', land:4.2, crop:'Paddy', wasteType:'rice_straw', qty:820 },
+  { name:'Lakshmi R.', village:'Erode', land:2.5, crop:'Sugarcane', wasteType:'sugarcane_bagasse', qty:1400 },
+  { name:'Selvam P.', village:'Tirupur', land:1.8, crop:'Cotton', wasteType:'cotton_stalk', qty:510 },
+  { name:'Kavitha S.', village:'Coimbatore', land:1.1, crop:'Banana', wasteType:'banana_stem', qty:390 }
+];
+
+let distChart, incomeChart;
+
+/* ---------------- tabs ---------------- */
+document.querySelectorAll('[data-tab]').forEach(btn=>{
+  btn.addEventListener('click', ()=> switchTab(btn.dataset.tab));
+});
+document.querySelectorAll('[data-goto]').forEach(el=>{
+  el.addEventListener('click', ()=> switchTab(el.dataset.goto));
+});
+function switchTab(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active', p.id===id));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===id));
+  if(id==='dashboard') renderDashboard();
+  if(id==='transactions') renderTransactions();
+}
+
+/* ---------------- toast ---------------- */
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2600);
+}
+
+/* ---------------- populate selects ---------------- */
+function populateWasteSelects(){
+  const opts = WASTE_TYPES.map(w => `<option value="${w.id}">${w.icon} ${w.name}</option>`).join('');
+  document.getElementById('f-waste-type').innerHTML = opts;
+  document.getElementById('a-waste-type').innerHTML = opts;
+  document.getElementById('market-filter').innerHTML = `<option value="all">All waste types</option>` + opts;
+}
+
+/* ---------------- register ---------------- */
+document.getElementById('farmer-form').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const farmer = {
+    name: document.getElementById('f-name').value.trim(),
+    village: document.getElementById('f-village').value.trim(),
+    land: parseFloat(document.getElementById('f-land').value),
+    crop: document.getElementById('f-crop').value.trim(),
+    wasteType: document.getElementById('f-waste-type').value,
+    qty: parseFloat(document.getElementById('f-waste-qty').value)
+  };
+  farmers.push(farmer);
+  e.target.reset();
+  renderFarmers();
+  renderOverviewStats();
+  showToast(`${farmer.name} registered — ${farmer.qty} kg/mo of ${wasteById(farmer.wasteType).name} added to the pool.`);
+});
+
+function renderFarmers(){
+  const list = document.getElementById('farmer-list');
+  document.getElementById('farmer-count').textContent = farmers.length;
+  list.innerHTML = farmers.slice().reverse().map((f, revIdx)=>{
+    const idx = farmers.length - 1 - revIdx;
+    const w = wasteById(f.wasteType);
+    return `
+      <div class="farmer-card">
+        <div class="info">
+          <strong>${f.name}</strong>
+          <div class="meta">${f.village} · ${f.land} ac · ${f.crop}</div>
+          <div style="margin-top:6px;">
+            <span class="tag">${w.icon} ${w.name}</span>
+            <span class="tag">${f.qty} kg/mo</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" data-analyze-idx="${idx}">Analyze →</button>
+      </div>`;
+  }).join('');
+  list.querySelectorAll('[data-analyze-idx]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const f = farmers[btn.dataset.analyzeIdx];
+      document.getElementById('a-waste-type').value = f.wasteType;
+      document.getElementById('a-waste-qty').value = f.qty;
+      switchTab('analyze');
+      runAnalysis();
+    });
+  });
+}
+
+/* ---------------- analyze ---------------- */
+document.getElementById('analyze-btn').addEventListener('click', runAnalysis);
+let lastAnalyzedWaste = null;
+let lastAnalyzedQty = 0;
+
+function runAnalysis(){
+  const wasteId = document.getElementById('a-waste-type').value;
+  const qty = parseFloat(document.getElementById('a-waste-qty').value) || 0;
+  const w = wasteById(wasteId);
+  lastAnalyzedWaste = wasteId;
+  lastAnalyzedQty = qty;
+
+  document.getElementById('res-eyebrow').textContent = `Classified as · ${w.icon} ${w.name}`;
+  document.getElementById('res-title').textContent = `${qty} kg/month analyzed`;
+
+  const rows = w.products.map(p=>{
+    const est = Math.round(avgValuePerKg(p) * qty);
+    return `
+      <div class="product-row">
+        <div>
+          <div class="name">${p.name}</div>
+          <div class="buyer">Buyer: ${p.buyer}</div>
+        </div>
+        <div class="val">₹${p.min}–${p.max}/kg · ~₹${est.toLocaleString('en-IN')}/mo</div>
+      </div>`;
+  }).join('');
+  document.getElementById('product-list').innerHTML = rows;
+  document.getElementById('res-note').textContent = w.note;
+  document.getElementById('result-card').classList.add('show');
+
+  runAIInsight(w, qty);
+}
+
+/* ---------------- AI insight (live Claude API call) ---------------- */
+async function runAIInsight(waste, qty){
+  const card = document.getElementById('ai-card');
+  const dot = document.getElementById('ai-dot');
+  const body = document.getElementById('ai-body');
+  card.classList.add('show');
+  dot.classList.add('pulse');
+  body.innerHTML = `<div class="ai-loading">Consulting Claude for a tailored read on this waste stream…</div>`;
+
+  const productNames = waste.products.map(p=>p.name).join(', ');
+  const prompt = `You are an agri-business advisor helping a smallholder farmer in Tamil Nadu, India.
+Waste stream: ${waste.name} (${qty} kg/month).
+Knowledge-base products already matched to it: ${productNames}.
+Respond with ONLY a raw JSON object (no markdown fences, no commentary) with exactly these keys:
+{
+  "top_pick": "which of the listed products is the best fit for this quantity, and one sentence why",
+  "new_idea": "one additional business/product idea for this waste stream NOT already in the list above",
+  "advice": "one short practical tip for a farmer or cooperative handling this volume (storage, timing, aggregation, etc.)",
+  "impact": "one sentence on the environmental/pollution-avoidance impact of diverting this waste instead of burning or dumping it"
+}`;
+
+  try{
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    if(!response.ok) throw new Error(`API returned ${response.status}`);
+    const data = await response.json();
+    const textBlock = (data.content || []).find(b => b.type === 'text');
+    if(!textBlock) throw new Error('No text in AI response');
+
+    const cleaned = textBlock.text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+
+    body.innerHTML = `
+      <div class="ai-row"><b>Top pick —</b> ${parsed.top_pick}</div>
+      <div class="ai-row"><b>Another angle —</b> ${parsed.new_idea}</div>
+      <div class="ai-row"><b>Practical tip —</b> ${parsed.advice}</div>
+      <div class="ai-row"><b>Environmental impact —</b> ${parsed.impact}</div>
+    `;
+  }catch(err){
+    body.innerHTML = `<div class="ai-error">Couldn't reach Claude for a live AI analysis (${err.message}). This call needs an environment that supplies Anthropic API access — the recommended products above still come from the local knowledge base and stay accurate on their own.</div>`;
+  }finally{
+    dot.classList.remove('pulse');
+  }
+}
+
+document.getElementById('find-buyers-btn').addEventListener('click', ()=>{
+  if(!lastAnalyzedWaste){ runAnalysis(); }
+  document.getElementById('market-filter').value = lastAnalyzedWaste || 'all';
+  renderBuyers();
+  switchTab('marketplace');
+});
+
+/* ---------------- marketplace ---------------- */
+document.getElementById('market-filter').addEventListener('change', renderBuyers);
+
+function renderBuyers(){
+  const filter = document.getElementById('market-filter').value;
+  const grid = document.getElementById('buyer-grid');
+  const list = BUYERS.filter(b => filter==='all' || b.accepts.includes(filter));
+  grid.innerHTML = list.map(b=>{
+    const tags = b.accepts.map(id=>{
+      const w = wasteById(id);
+      return `<span class="tag">${w.icon} ${w.name}</span>`;
+    }).join('');
+    return `
+      <div class="buyer-card">
+        <div class="top">
+          <div>
+            <h3>${b.name}</h3>
+            <div class="type">${b.type}</div>
+          </div>
+          <div class="rating">★ ${b.rating}</div>
+        </div>
+        <div class="loc">${b.location}</div>
+        <div class="accepts">${tags}</div>
+        <button class="btn btn-primary btn-sm" data-connect="${b.name}" style="width:100%;">Connect</button>
+      </div>`;
+  }).join('') || `<p style="color:var(--ink-soft); font-size:14px;">No buyers currently accept this waste type.</p>`;
+
+  grid.querySelectorAll('[data-connect]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const buyer = BUYERS.find(b=>b.name===btn.dataset.connect);
+      startTransaction(buyer);
+    });
+  });
+}
+
+/* ---------------- transactions ---------------- */
+const TXN_STAGES = ['Order placed','Payment confirmed','Pickup scheduled','In transit','Delivered'];
+let transactions = [];
+let txnIdCounter = 1;
+
+function startTransaction(buyer){
+  const filterVal = document.getElementById('market-filter').value;
+  const wasteId = lastAnalyzedWaste || (filterVal !== 'all' ? filterVal : buyer.accepts[0]);
+  const w = wasteById(wasteId);
+  const qty = lastAnalyzedWaste ? lastAnalyzedQty : (300 + Math.round(Math.random()*700));
+  const product = bestProductFor(wasteId);
+  const value = Math.round(avgValuePerKg(product) * qty);
+
+  const txn = {
+    id: txnIdCounter++,
+    buyer: buyer.name,
+    wasteType: wasteId,
+    qty, value,
+    stageIdx: 0,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  };
+  transactions.push(txn);
+  renderTransactions();
+  showToast(`Order placed with ${buyer.name} — ${w.icon} ${w.name}, ${qty} kg, ~₹${value.toLocaleString('en-IN')}.`);
+}
+
+function advanceTransaction(id){
+  const txn = transactions.find(t=>t.id===id);
+  if(!txn || txn.stageIdx >= TXN_STAGES.length - 1) return;
+  txn.stageIdx++;
+  txn.updatedAt = new Date();
+  renderTransactions();
+  if(txn.stageIdx === TXN_STAGES.length - 1){
+    showToast(`${txn.buyer} order #${txn.id} marked delivered.`);
+  }
+}
+
+function renderTransactions(){
+  const active = transactions.filter(t=>t.stageIdx < TXN_STAGES.length - 1);
+  const completed = transactions.filter(t=>t.stageIdx === TXN_STAGES.length - 1);
+
+  document.getElementById('t-active').textContent = active.length;
+  document.getElementById('t-completed').textContent = completed.length;
+  document.getElementById('t-value').textContent = '₹' + completed.reduce((s,t)=>s+t.value,0).toLocaleString('en-IN');
+
+  const activeList = document.getElementById('txn-active-list');
+  activeList.innerHTML = active.length ? active.slice().reverse().map(t=>txnCardHtml(t, true)).join('')
+    : `<div class="txn-empty">No orders in progress. Connect with a buyer from the Marketplace to start one.</div>`;
+
+  const historyList = document.getElementById('txn-history-list');
+  historyList.innerHTML = completed.length ? completed.slice().reverse().map(t=>txnCardHtml(t, false)).join('')
+    : `<div class="txn-empty">Completed orders will appear here once delivered.</div>`;
+
+  activeList.querySelectorAll('[data-advance]').forEach(btn=>{
+    btn.addEventListener('click', ()=> advanceTransaction(parseInt(btn.dataset.advance)));
+  });
+}
+
+function txnCardHtml(t, isActive){
+  const w = wasteById(t.wasteType);
+  const steps = TXN_STAGES.map((label, i)=>{
+    const cls = i < t.stageIdx ? 'done' : (i === t.stageIdx ? 'current' : '');
+    const mark = i < t.stageIdx ? '✓' : (i+1);
+    return `<div class="step ${cls}"><div class="dot">${mark}</div><div class="lbl">${label}</div></div>`;
+  }).join('');
+  const badge = isActive
+    ? `<span class="txn-badge">${TXN_STAGES[t.stageIdx]}</span>`
+    : `<span class="txn-badge done">✓ Delivered · ${t.updatedAt.toLocaleDateString('en-IN')}</span>`;
+  const actions = isActive
+    ? `<div class="txn-actions"><button class="btn btn-primary btn-sm" data-advance="${t.id}">Advance to next stage →</button></div>`
+    : '';
+  return `
+    <div class="txn-card ${isActive ? '' : 'completed'}">
+      <div class="txn-top">
+        <div class="who">
+          <strong>${t.buyer}</strong>
+          <div class="meta">Order #${t.id} · ${w.icon} ${w.name} · ${t.qty} kg</div>
+          ${badge}
+        </div>
+        <div class="val">₹${t.value.toLocaleString('en-IN')}</div>
+      </div>
+      <div class="stepper">${steps}</div>
+      ${actions}
+    </div>`;
+}
+
+/* ---------------- dashboard ---------------- */
+function computeStats(){
+  const totalFarmers = farmers.length;
+  const totalWaste = farmers.reduce((s,f)=> s + f.qty, 0);
+  const totalIncome = farmers.reduce((s,f)=>{
+    const p = bestProductFor(f.wasteType);
+    return s + avgValuePerKg(p) * f.qty;
+  }, 0);
+  const co2Tonnes = (totalWaste * 1.5) / 1000; // approx factor: 1.5kg CO2e avoided per kg diverted from burning
+  return { totalFarmers, totalWaste, totalIncome, co2Tonnes };
+}
+
+function renderOverviewStats(){
+  const s = computeStats();
+  document.getElementById('ov-farmers').textContent = s.totalFarmers;
+  document.getElementById('ov-waste').textContent = s.totalWaste.toLocaleString('en-IN');
+  document.getElementById('ov-income').textContent = '₹' + Math.round(s.totalIncome).toLocaleString('en-IN');
+  document.getElementById('ov-co2').textContent = s.co2Tonnes.toFixed(1);
+}
+
+function renderDashboard(){
+  const s = computeStats();
+  document.getElementById('d-farmers').textContent = s.totalFarmers;
+  document.getElementById('d-waste').textContent = s.totalWaste.toLocaleString('en-IN');
+  document.getElementById('d-income').textContent = '₹' + Math.round(s.totalIncome).toLocaleString('en-IN');
+  document.getElementById('d-co2').textContent = s.co2Tonnes.toFixed(1);
+
+  const byType = {};
+  farmers.forEach(f=>{ byType[f.wasteType] = (byType[f.wasteType]||0) + f.qty; });
+  const typeLabels = Object.keys(byType).map(id => wasteById(id).name);
+  const typeValues = Object.values(byType);
+
+  const palette = ['#5FCB7A','#F0824A','#E3B23C','#4FB8E8','#8FA095','#D46A9E','#7D8CE0'];
+
+  if(distChart) distChart.destroy();
+  distChart = new Chart(document.getElementById('chart-distribution'), {
+    type:'doughnut',
+    data:{ labels:typeLabels, datasets:[{ data:typeValues, backgroundColor: palette, borderColor:'#1A2320', borderWidth:2 }] },
+    options:{ plugins:{ legend:{ position:'bottom', labels:{ font:{ family:'IBM Plex Sans', size:11 }, color:'#8FA095', boxWidth:10, padding:12 } } } }
+  });
+
+  const incomeLabels = farmers.map(f=>f.name);
+  const incomeValues = farmers.map(f=> Math.round(avgValuePerKg(bestProductFor(f.wasteType)) * f.qty));
+
+  if(incomeChart) incomeChart.destroy();
+  incomeChart = new Chart(document.getElementById('chart-income'), {
+    type:'bar',
+    data:{ labels:incomeLabels, datasets:[{ label:'Est. income (₹/mo)', data:incomeValues, backgroundColor:'#5FCB7A', borderRadius:5, maxBarThickness:42 }] },
+    options:{
+      plugins:{ legend:{ display:false } },
+      scales:{
+        x:{ ticks:{ font:{ family:'IBM Plex Sans', size:11 }, color:'#8FA095' }, grid:{ display:false } },
+        y:{ ticks:{ font:{ family:'IBM Plex Mono', size:10 }, color:'#8FA095' }, grid:{ color:'rgba(233,239,233,0.08)' } }
+      }
+    }
+  });
+}
+
+/* ---------------- init ---------------- */
+populateWasteSelects();
+renderFarmers();
+renderBuyers();
+renderOverviewStats();
+renderTransactions();
+</script>
+</body>
+</html>
